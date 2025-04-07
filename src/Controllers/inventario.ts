@@ -1,3 +1,4 @@
+//ya no se va a usar el MCR de inventario
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { Inventario } from "../Models/inventario";

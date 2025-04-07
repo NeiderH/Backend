@@ -35,16 +35,7 @@ exports.Mercancia = conexion_1.default.define("mercancia", {
     estado: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
-    },
-    cantidad: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
-    },
-    // Aquí se agrega la llave foránea de la tabla inventario
-    id_inv: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: true,
-    },
+    }
 }, {
     tableName: "mercancia",
     timestamps: false,

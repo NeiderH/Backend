@@ -32,16 +32,7 @@ export const Mercancia = Sequelize.define(
         estado: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
-        cantidad: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        // Aquí se agrega la llave foránea de la tabla inventario
-        id_inv: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-        },
+        }
     },
     {
         tableName: "mercancia",

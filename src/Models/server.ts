@@ -3,15 +3,11 @@ import cors from 'cors'; // Importa CORS
 import sequelize from '../data/conexion';
 import routerU from '../routes/usuario';
 import routerF from '../routes/factura';
-import routerP from '../routes/plato';
 import routerO from '../routes/observacion';
-import routerI from '../routes/inventario';
 import routerM from '../routes/mercancia';
 import { Usuario } from './usuario';
 import { Factura } from './factura';
-import{Plato} from './plato';
 import { Observacion } from './observacion';
-import { Inventario } from './inventario';
 import { Mercancia } from './mercancia';
 
 class Server {
@@ -47,9 +43,7 @@ class Server {
     router() {
         this.app.use(routerU);
         this.app.use(routerF);
-        this.app.use(routerP);
         this.app.use(routerO);
-        this.app.use(routerI);
         this.app.use(routerM);
     }    
 
@@ -58,9 +52,7 @@ class Server {
             // recordarme eliminar sync en producción
             await Usuario.sync();
             await Factura.sync();
-            await Plato.sync();
             await Observacion.sync();
-            await Inventario.sync();
             await Mercancia.sync();
             console.log('DB online');
         } catch (error) {

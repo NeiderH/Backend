@@ -16,15 +16,11 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors")); // Importa CORS
 const usuario_1 = __importDefault(require("../routes/usuario"));
 const factura_1 = __importDefault(require("../routes/factura"));
-const plato_1 = __importDefault(require("../routes/plato"));
 const observacion_1 = __importDefault(require("../routes/observacion"));
-const inventario_1 = __importDefault(require("../routes/inventario"));
 const mercancia_1 = __importDefault(require("../routes/mercancia"));
 const usuario_2 = require("./usuario");
 const factura_2 = require("./factura");
-const plato_2 = require("./plato");
 const observacion_2 = require("./observacion");
-const inventario_2 = require("./inventario");
 const mercancia_2 = require("./mercancia");
 class Server {
     constructor() {
@@ -52,9 +48,7 @@ class Server {
     router() {
         this.app.use(usuario_1.default);
         this.app.use(factura_1.default);
-        this.app.use(plato_1.default);
         this.app.use(observacion_1.default);
-        this.app.use(inventario_1.default);
         this.app.use(mercancia_1.default);
     }
     DBConexion() {
@@ -63,9 +57,7 @@ class Server {
                 // recordarme eliminar sync en producción
                 yield usuario_2.Usuario.sync();
                 yield factura_2.Factura.sync();
-                yield plato_2.Plato.sync();
                 yield observacion_2.Observacion.sync();
-                yield inventario_2.Inventario.sync();
                 yield mercancia_2.Mercancia.sync();
                 console.log('DB online');
             }

@@ -1,10 +1,9 @@
 import { Router } from "express";
-import { RegFacturas, GetFacturas } from "../Controllers/factura";
-import validartoken from "./validartoken";
+import { RegFactura, GetFactura } from "../Controllers/factura";
 
 const router = Router();
 
-router.post("/api/Factura/RegFacturas", RegFacturas);
-router.get("/api/Factura/GetFacturas", validartoken, GetFacturas);
+router.post("/api/Factura/RegFactura", RegFactura);
+router.get("/api/Factura/GetFactura", GetFactura);
 
 export default router;

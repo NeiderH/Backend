@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpEFacturas = exports.GetFacturas = exports.RegFacturas = void 0;
+exports.UpEFacturas = exports.GetFactura = exports.RegFactura = void 0;
 const factura_1 = require("../Models/factura");
-const RegFacturas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const RegFactura = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fecha, tipo_proceso, subtotal, descripcion } = req.body;
     try {
         yield factura_1.Factura.create({
@@ -31,12 +31,24 @@ const RegFacturas = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
 });
-exports.RegFacturas = RegFacturas;
-const GetFacturas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const listfacturas = yield factura_1.Factura.findAll();
-    res.json(listfacturas);
+exports.RegFactura = RegFactura;
+const GetFactura = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const listafactura = yield factura_1.Factura.findAll({
+            order: [['id_factura', 'DESC']]
+        });
+        console.log("📌 Factura encontrada:", listafactura);
+        if (listafactura.length == 0) {
+            console.warn("⚠️ No hay Facturas en la base de datos.");
+        }
+        res.json(listafactura);
+    }
+    catch (error) {
+        console.error("❌ Error al obtener la Factura:", error);
+        res.status(500).json({ message: "Error al obtener las Facturas" });
+    }
 });
-exports.GetFacturas = GetFacturas;
+exports.GetFactura = GetFactura;
 // cambiar el estado de la factura
 const UpEFacturas = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id_factura } = req.body;

@@ -29,7 +29,7 @@ exports.Factura = conexion_1.default.define("facturas", {
         allowNull: false,
     },
     estado: {
-        type: sequelize_1.DataTypes.BOOLEAN,
+        type: sequelize_1.DataTypes.TINYINT,
         allowNull: false,
     },
     cantidad: {
@@ -39,6 +39,9 @@ exports.Factura = conexion_1.default.define("facturas", {
     //foreign key de la tabla inventario
     id_inv: {
         type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     }
+}, {
+    tableName: "facturas",
+    timestamps: false,
 });

@@ -20,11 +20,11 @@ export const Inventario = Sequelize.define(
         // Aquí se agrega la llave foránea de la tabla mercancia y plato
         id_pl: {
             type: DataTypes.INTEGER,
-            allowNull: true, // Elimina autoIncrement
+            allowNull: true
         },
         id_merca: {
             type: DataTypes.INTEGER,
-            allowNull: true, // Elimina autoIncrement
+            allowNull: true
         },
     },
     {

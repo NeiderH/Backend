@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Factura } from "../Models/factura";
 import jwt from "jsonwebtoken";
 
-export const RegFacturas = async (req: Request, res: Response) => {
+export const RegFactura = async (req: Request, res: Response) => {
     const { fecha, tipo_proceso, subtotal, descripcion} = req.body;
 
     try {
@@ -25,9 +25,23 @@ export const RegFacturas = async (req: Request, res: Response) => {
         });
     }
 };
-export const GetFacturas = async (req: Request, res: Response) => {
-    const listfacturas = await Factura.findAll();
-    res.json(listfacturas);
+export const GetFactura = async (req: Request, res: Response) => {
+    try {
+        const listafactura = await Factura.findAll({
+            order: [['id_factura', 'DESC']]
+
+        });
+        console.log("📌 Factura encontrada:", listafactura);
+
+        if (listafactura.length == 0) {
+            console.warn("⚠️ No hay Facturas en la base de datos.");
+        }
+
+        res.json(listafactura);
+    } catch (error) {
+        console.error("❌ Error al obtener la Factura:", error);
+        res.status(500).json({ message: "Error al obtener las Facturas" });
+    }
 };
 // cambiar el estado de la factura
 export const UpEFacturas = async (req: Request, res: Response) => {

@@ -7,4 +7,5 @@ router.post("/api/Mercancia/RegMercancia", mercancia_1.RegMercancia);
 router.get("/api/Mercancia/GetMercancia", mercancia_1.GetMercancia);
 router.put("/api/Mercancia/UpMercancia/:id_merca", mercancia_1.UpMercancia);
 router.put("/api/Mercancia/EstadoMercancia/:id_merca", mercancia_1.EstadoMercancia);
+router.get("/api/Mercancia/GetMercanciaAgrupada", mercancia_1.GetMercanciaAgrupada);
 exports.default = router;

@@ -8,11 +8,11 @@ export const RegObservacion = async (req: Request, res: Response) => {
 
     try {
         // Convertir la fecha a la zona horaria de Colombia
-        const fechaColombia = moment.tz(fecha, "America/Bogota").utc().format();
+        const fechaConZonaHoraria = moment(fecha).tz('America/Bogota').toDate();
 
         await Observacion.create({
             observaciont: observaciont,
-            fecha: fechaColombia,
+            fecha: fechaConZonaHoraria,
         });
 
         res.json({
@@ -61,9 +61,9 @@ export const UpObservacion = async (req: Request, res: Response) => {
         });
 
         if (observacion) {
+
             await observacion.update({
                 observaciont: observaciont,
-                fecha: fecha,
             });
             res.json({
                 message: `Plobservacionato actualizada correctamente`,

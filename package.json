@@ -19,7 +19,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "moment-timezone": "^0.5.47",
+    "moment-timezone": "^0.5.48",
     "mysql2": "^3.12.0",
     "sequelize": "^6.37.5"
   },

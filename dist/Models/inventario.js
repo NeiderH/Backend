@@ -23,11 +23,11 @@ exports.Inventario = conexion_1.default.define("inventario", {
     // Aquí se agrega la llave foránea de la tabla mercancia y plato
     id_pl: {
         type: sequelize_1.DataTypes.INTEGER,
-        allowNull: true, // Elimina autoIncrement
+        allowNull: true
     },
     id_merca: {
         type: sequelize_1.DataTypes.INTEGER,
-        allowNull: true, // Elimina autoIncrement
+        allowNull: true
     },
 }, {
     tableName: "inventario", // Especifica el nombre exacto de la tabla

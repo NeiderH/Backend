@@ -1,3 +1,4 @@
+// ya no se va a usar MCR de plato
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { Plato } from "../Models/plato";

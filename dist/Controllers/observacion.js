@@ -20,10 +20,10 @@ const RegObservacion = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { observaciont, fecha } = req.body;
     try {
         // Convertir la fecha a la zona horaria de Colombia
-        const fechaColombia = moment_timezone_1.default.tz(fecha, "America/Bogota").utc().format();
+        const fechaConZonaHoraria = (0, moment_timezone_1.default)(fecha).tz('America/Bogota').toDate();
         yield observacion_1.Observacion.create({
             observaciont: observaciont,
-            fecha: fechaColombia,
+            fecha: fechaConZonaHoraria,
         });
         res.json({
             message: `Observación registrada correctamente`,
@@ -68,7 +68,6 @@ const UpObservacion = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (observacion) {
             yield observacion.update({
                 observaciont: observaciont,
-                fecha: fecha,
             });
             res.json({
                 message: `Plobservacionato actualizada correctamente`,
