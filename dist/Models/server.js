@@ -55,10 +55,10 @@ class Server {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // recordarme eliminar sync en producción
-                yield usuario_2.Usuario.sync();
-                yield factura_2.Factura.sync();
-                yield observacion_2.Observacion.sync();
-                yield mercancia_2.Mercancia.sync();
+                yield usuario_2.Usuario;
+                yield factura_2.Factura;
+                yield observacion_2.Observacion;
+                yield mercancia_2.Mercancia;
                 console.log('DB online');
             }
             catch (error) {

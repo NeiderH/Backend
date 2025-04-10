@@ -50,10 +50,10 @@ class Server {
     async DBConexion() {
         try {
             // recordarme eliminar sync en producción
-            await Usuario.sync();
-            await Factura.sync();
-            await Observacion.sync();
-            await Mercancia.sync();
+            await Usuario;
+            await Factura;
+            await Observacion;
+            await Mercancia;
             console.log('DB online');
         } catch (error) {
             console.log(error);

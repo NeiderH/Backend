@@ -5,4 +5,7 @@ const factura_1 = require("../Controllers/factura");
 const router = (0, express_1.Router)();
 router.post("/api/Factura/RegFactura", factura_1.RegFactura);
 router.get("/api/Factura/GetFactura", factura_1.GetFactura);
+router.put("/api/Factura/UpFactura/:id_factura", factura_1.UpFacturas);
+router.put("/api/Factura/EstadoFactura/:id_factura", factura_1.EstadoFactura);
+router.get("/api/Factura/GetFacturaAgrupada", factura_1.GetFacturaAgrupada);
 exports.default = router;

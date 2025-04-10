@@ -51,10 +51,7 @@ export const GetMercancia = async (req: Request, res: Response) => {
 // actualizar el plato 
 export const UpMercancia = async (req: Request, res: Response) => {
     const { id_merca } = req.params;
-    const {
-        descripcion,
-        estado
-    } = req.body;
+    const {descripcion,estado} = req.body;
 
     try {
         const mercancia = await Mercancia.findOne({
@@ -116,7 +113,6 @@ export const EstadoMercancia = async (req: Request, res: Response) => {
     }
 };
 // obtener las mercancias registradas y agrupar las que tienen la misma fecha(dia), excepto las anuladas (estado = 0)
-
 export const GetMercanciaAgrupada = async (req: Request, res: Response) => {
     const { fecha } = req.query; // Obtener la fecha desde los parámetros de consulta
 

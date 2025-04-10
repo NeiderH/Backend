@@ -23,7 +23,7 @@ export const Factura = Sequelize.define(
         },
         descripcion: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         },
         estado: {
         type: DataTypes.TINYINT,
@@ -31,7 +31,7 @@ export const Factura = Sequelize.define(
         },
         cantidad:{
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         },
         //foreign key de la tabla inventario
         id_inv:{
