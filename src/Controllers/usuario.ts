@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { Usuario } from "../Models/usuario";
 import jwt from "jsonwebtoken";
+import { app } from "../firebase";
 
 export const RegUsuarios = async (req: Request, res: Response): Promise<void> => {
     try {

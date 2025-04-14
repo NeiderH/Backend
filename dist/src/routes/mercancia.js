@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const mercancia_1 = require("../Controllers/mercancia");
+const router = (0, express_1.Router)();
+router.post("/api/Mercancia/RegMercancia", mercancia_1.RegMercancia);
+router.get("/api/Mercancia/GetMercancia", mercancia_1.GetMercancia);
+router.put("/api/Mercancia/UpMercancia/:id_merca", mercancia_1.UpMercancia);
+router.put("/api/Mercancia/EstadoMercancia/:id_merca", mercancia_1.EstadoMercancia);
+router.get("/api/Mercancia/GetMercanciaAgrupada", mercancia_1.GetMercanciaAgrupada);
+exports.default = router;

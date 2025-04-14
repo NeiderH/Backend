@@ -1,15 +1,22 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { Mercancia } from "../Models/mercancia";
-import { Sequelize, Op } from "sequelize";
-import { app } from "../firebase";
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GetMercanciaAgrupada = exports.EstadoMercancia = exports.UpMercancia = exports.GetMercancia = exports.RegMercancia = void 0;
+const mercancia_1 = require("../Models/mercancia");
+const sequelize_1 = require("sequelize");
 // registrar el plato 
-export const RegMercancia = async (req: Request, res: Response) => {
-    const { proveedor, producto, descripcion, precio, fecha} = req.body;
-
+const RegMercancia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { proveedor, producto, descripcion, precio, fecha } = req.body;
     try {
-
-        await Mercancia.create({
+        yield mercancia_1.Mercancia.create({
             proveedor: proveedor,
             producto: producto,
             descripcion: descripcion,
@@ -17,124 +24,121 @@ export const RegMercancia = async (req: Request, res: Response) => {
             fecha: fecha,
             estado: 1,
         });
-
         res.json({
             message: `Mercancia registrada correctamente`,
         });
-
-    } catch (error) {
+    }
+    catch (error) {
         console.error("Error al registrar la Mercancia:", error);
         res.status(400).json({
             message: "Error al registrar la Mercancia",
         });
     }
-};
+});
+exports.RegMercancia = RegMercancia;
 // obtener todos los platos
-export const GetMercancia = async (req: Request, res: Response) => {
+const GetMercancia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const listamerca = await Mercancia.findAll({
+        const listamerca = yield mercancia_1.Mercancia.findAll({
             order: [['id_merca', 'DESC']]
-
         });
         console.log("📌 Mercancia encontrada:", listamerca);
-
         if (listamerca.length == 0) {
             console.warn("⚠️ No hay Mercancias en la base de datos.");
         }
-
         res.json(listamerca);
-    } catch (error) {
+    }
+    catch (error) {
         console.error("❌ Error al obtener mercancia:", error);
         res.status(500).json({ message: "Error al obtener las mercancias" });
     }
-};
+});
+exports.GetMercancia = GetMercancia;
 // actualizar el plato 
-export const UpMercancia = async (req: Request, res: Response) => {
+const UpMercancia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id_merca } = req.params;
-    const {descripcion,estado} = req.body;
-
+    const { descripcion, estado } = req.body;
     try {
-        const mercancia = await Mercancia.findOne({
+        const mercancia = yield mercancia_1.Mercancia.findOne({
             where: {
                 id_merca: id_merca,
             },
         });
-
         if (mercancia) {
-
-            await mercancia.update({
+            yield mercancia.update({
                 descripcion: descripcion,
                 estado: estado
             });
             res.json({
                 message: `Mercancia actualizada correctamente`,
             });
-        } else {
+        }
+        else {
             res.status(404).json({
                 message: `Mercancia no encontrada`,
             });
         }
-    } catch (error) {
+    }
+    catch (error) {
         console.error("Error al actualizar la Mercancia:", error);
         res.status(500).json({
             message: "Error al actualizar la Mercancia",
         });
     }
-};
+});
+exports.UpMercancia = UpMercancia;
 // cambiar el estado de la mercancia
-export const EstadoMercancia = async (req: Request, res: Response) => {
+const EstadoMercancia = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id_merca } = req.params;
     const { estado } = req.body; // Recibir el nuevo estado desde el frontend
-
     try {
-        const mercancia = await Mercancia.findOne({
+        const mercancia = yield mercancia_1.Mercancia.findOne({
             where: {
                 id_merca: id_merca,
             },
         });
-
         if (mercancia) {
-            await mercancia.update({
+            yield mercancia.update({
                 estado: estado, // Actualizar con el estado recibido
             });
             res.json({
                 message: `Estado de la mercancía actualizado correctamente`,
             });
-        } else {
+        }
+        else {
             res.status(404).json({
                 message: `Mercancía no encontrada`,
             });
         }
-    } catch (error) {
+    }
+    catch (error) {
         console.error("Error al cambiar el estado de la mercancía:", error);
         res.status(500).json({
             message: "Error al cambiar el estado de la mercancía",
         });
     }
-};
+});
+exports.EstadoMercancia = EstadoMercancia;
 // obtener las mercancias registradas y agrupar las que tienen la misma fecha(dia), excepto las anuladas (estado = 0)
-export const GetMercanciaAgrupada = async (req: Request, res: Response) => {
+const GetMercanciaAgrupada = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fecha } = req.query; // Obtener la fecha desde los parámetros de consulta
-
     try {
-        const whereCondition: any = { estado: 1 }; // Solo mercancías activas
+        const whereCondition = { estado: 1 }; // Solo mercancías activas
         if (fecha) {
-            whereCondition[Op.and] = [
-                Sequelize.where(Sequelize.fn('DATE_FORMAT', Sequelize.col('fecha'), '%Y-%m-%d'), fecha)
+            whereCondition[sequelize_1.Op.and] = [
+                sequelize_1.Sequelize.where(sequelize_1.Sequelize.fn('DATE_FORMAT', sequelize_1.Sequelize.col('fecha'), '%Y-%m-%d'), fecha)
             ];
         }
-
-        const mercancias = await Mercancia.findAll({
+        const mercancias = yield mercancia_1.Mercancia.findAll({
             where: whereCondition,
             attributes: [
-                [Sequelize.fn('DATE_FORMAT', Sequelize.col('fecha'), '%Y-%m-%d'), 'fecha'], // Formatear la fecha
+                [sequelize_1.Sequelize.fn('DATE_FORMAT', sequelize_1.Sequelize.col('fecha'), '%Y-%m-%d'), 'fecha'], // Formatear la fecha
                 'id_merca', 'proveedor', 'producto', 'descripcion', 'precio', 'estado' // Incluir detalles
             ],
-            order: [[Sequelize.fn('DATE_FORMAT', Sequelize.col('fecha'), '%Y-%m-%d'), 'DESC']] // Ordenar por fecha descendente
+            order: [[sequelize_1.Sequelize.fn('DATE_FORMAT', sequelize_1.Sequelize.col('fecha'), '%Y-%m-%d'), 'DESC']] // Ordenar por fecha descendente
         });
-
         // Agrupar mercancías por fecha y calcular el total
-        const agrupadas = mercancias.reduce((acc: any, mercancia: any) => {
+        const agrupadas = mercancias.reduce((acc, mercancia) => {
             const fecha = mercancia.get('fecha');
             if (!acc[fecha]) {
                 acc[fecha] = { total: 0, detalles: [] };
@@ -143,10 +147,11 @@ export const GetMercanciaAgrupada = async (req: Request, res: Response) => {
             acc[fecha].detalles.push(mercancia);
             return acc;
         }, {});
-
         res.json(agrupadas);
-    } catch (error) {
+    }
+    catch (error) {
         console.error("Error al obtener mercancías agrupadas:", error);
         res.status(500).json({ message: "Error al obtener mercancías agrupadas" });
     }
-};
+});
+exports.GetMercanciaAgrupada = GetMercanciaAgrupada;

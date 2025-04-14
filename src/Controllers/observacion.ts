@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Observacion } from "../Models/observacion";
 import moment from "moment-timezone";
+import { app } from "../firebase";
 
 // registrar la observacion 
 export const RegObservacion = async (req: Request, res: Response) => {
@@ -46,8 +47,6 @@ export const GetObservacion = async (req: Request, res: Response) => {
     }
   };
   
-
-
 // actualizar la observacion 
 export const UpObservacion = async (req: Request, res: Response) => {
     const { id_ob } = req.params;
