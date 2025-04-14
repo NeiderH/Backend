@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LogUsuarios = exports.RegUsuarios = void 0;
+exports.VerUsuario = exports.LogUsuarios = exports.RegUsuarios = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const usuario_1 = require("../Models/usuario");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -63,10 +63,34 @@ const LogUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return;
         }
         const token = jsonwebtoken_1.default.sign({ id: userData.id, correo: userData.correo, permiso: userData.permiso }, process.env["SECRET_KEY"] || "CY242BHtr87DCsacYUGjsJN", { expiresIn: "1d" });
-        res.json({ token, userData: { nombre: userData.nombre, permiso: userData.permiso } });
+        res.json({
+            token,
+            userData: {
+                id: userData.id, // Asegúrate de incluir el ID aquí
+                nombre: userData.nombre,
+                permiso: userData.permiso
+            }
+        });
     }
     catch (error) {
         res.status(500).json({ message: "Error al iniciar sesión" });
     }
 });
 exports.LogUsuarios = LogUsuarios;
+// ver y actualizar usuario loggeado
+const VerUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.body; // El ID del usuario debe enviarse en el cuerpo de la solicitud
+        const usuario = yield usuario_1.Usuario.findOne({ where: { id } });
+        if (!usuario) {
+            res.status(404).json({ message: "Usuario no encontrado" });
+            return;
+        }
+        const { nombre, correo, permiso, estado } = usuario.get(); // Extraer solo los campos necesarios
+        res.json({ nombre, correo, permiso, estado });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error al obtener el usuario" });
+    }
+});
+exports.VerUsuario = VerUsuario;

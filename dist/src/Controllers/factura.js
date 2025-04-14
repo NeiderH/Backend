@@ -132,7 +132,6 @@ const GetFacturaAgrupada = (req, res) => __awaiter(void 0, void 0, void 0, funct
                 'id_factura', 'tipo_proceso', 'subtotal', 'descripcion', 'estado' // Incluir detalles
             ],
             order: [[sequelize_1.Sequelize.fn('DATE_FORMAT', sequelize_1.Sequelize.col('fecha'), '%Y-%m-%d'), 'DESC']], // Ordenar por fecha descendente
-            limit: limit ? parseInt(limit) : undefined, // Aplicar el límite si se proporciona
         });
         // Agrupar facturas por fecha y calcular el total
         const agrupadas = facturas.reduce((acc, factura) => {
@@ -159,7 +158,15 @@ const GetFacturaAgrupada = (req, res) => __awaiter(void 0, void 0, void 0, funct
             acc[fecha].detalles.push(factura);
             return acc;
         }, {});
-        res.json(agrupadas);
+        // Limitar las agrupaciones a las 5 fechas más recientes
+        const agrupadasLimitadas = Object.keys(agrupadas)
+            .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // Ordenar por fecha descendente
+            .slice(0, limit ? parseInt(limit) : 5) // Limitar a las 5 fechas más recientes
+            .reduce((acc, key) => {
+            acc[key] = agrupadas[key];
+            return acc;
+        }, {});
+        res.json(agrupadasLimitadas);
     }
     catch (error) {
         console.error("Error al obtener facturas agrupadas:", error);

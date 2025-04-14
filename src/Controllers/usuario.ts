@@ -69,9 +69,35 @@ export const LogUsuarios = async (req: Request, res: Response): Promise<void> =>
             { expiresIn: "1d" }
         );
 
-        res.json({ token, userData: { nombre: userData.nombre, permiso: userData.permiso} });
+        res.json({ 
+            token, 
+            userData: { 
+              id: userData.id, // Asegúrate de incluir el ID aquí
+              nombre: userData.nombre, 
+              permiso: userData.permiso 
+            } 
+          });
 
     } catch (error) {
         res.status(500).json({ message: "Error al iniciar sesión" });
+    }
+};
+
+// ver y actualizar usuario loggeado
+export const VerUsuario = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.body; // El ID del usuario debe enviarse en el cuerpo de la solicitud
+
+        const usuario = await Usuario.findOne({ where: { id } });
+
+        if (!usuario) {
+            res.status(404).json({ message: "Usuario no encontrado" });
+            return;
+        }
+
+        const { nombre, correo, permiso, estado } = usuario.get(); // Extraer solo los campos necesarios
+        res.json({ nombre, correo, permiso, estado });
+    } catch (error) {
+        res.status(500).json({ message: "Error al obtener el usuario" });
     }
 };
