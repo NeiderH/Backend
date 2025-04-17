@@ -14,14 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors")); // Importa CORS
+//import sequelize from '../data/conexion';
+const conexion_1 = __importDefault(require("../data/conexion"));
 const usuario_1 = __importDefault(require("../routes/usuario"));
 const factura_1 = __importDefault(require("../routes/factura"));
 const observacion_1 = __importDefault(require("../routes/observacion"));
 const mercancia_1 = __importDefault(require("../routes/mercancia"));
-const usuario_2 = require("./usuario");
-const factura_2 = require("./factura");
-const observacion_2 = require("./observacion");
-const mercancia_2 = require("./mercancia");
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -33,7 +31,7 @@ class Server {
     }
     listen() {
         this.app.listen(this.port, () => {
-            console.log(`Server running on port ${this.port}`);
+            console.log(`Server port ${this.port}`);
         });
     }
     middleware() {
@@ -54,15 +52,11 @@ class Server {
     DBConexion() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // recordarme eliminar sync en producción
-                yield usuario_2.Usuario;
-                yield factura_2.Factura;
-                yield observacion_2.Observacion;
-                yield mercancia_2.Mercancia;
-                console.log('DB online');
+                yield (0, conexion_1.default)(); // Conectar a MongoDB
+                console.log('DB mongo online');
             }
             catch (error) {
-                console.log(error);
+                console.error('Error al conectar a la base de datos:', error);
             }
         });
     }

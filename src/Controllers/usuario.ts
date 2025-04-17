@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { Usuario } from "../Models/usuario";
 import jwt from "jsonwebtoken";
-import { app } from "../firebase";
 
 export const RegUsuarios = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -13,7 +12,8 @@ export const RegUsuarios = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
-        const usuariounico = await Usuario.findOne({ where: { correo } });
+        // Buscar usuario único en MongoDB
+        const usuariounico = await Usuario.findOne({ correo });
 
         if (usuariounico) {
             res.status(400).json({ message: `El correo ${correo} ya está registrado` });
@@ -22,18 +22,20 @@ export const RegUsuarios = async (req: Request, res: Response): Promise<void> =>
 
         const passwordHash = await bcrypt.hash(password, 10);
 
-        const nuevoUsuario = await Usuario.create({
+        // Crear un nuevo usuario en MongoDB
+        const nuevoUsuario = new Usuario({
             nombre,
             correo,
             password: passwordHash,
-            estado: true,
+            estado: 'Activo',
             permiso,
         });
 
-        const userData = nuevoUsuario.get(); // Convierte el modelo a un objeto plano
+        await nuevoUsuario.save(); // Guardar en la base de datos
 
-        res.json({ message: `Usuario ${userData.nombre} registrado correctamente` });
+        res.json({ message: `Usuario ${nuevoUsuario.nombre} registrado correctamente` });
     } catch (error) {
+        console.error("Error en RegUsuarios:", error);
         res.status(500).json({ message: "Error al registrar el usuario" });
     }
 };
@@ -47,57 +49,176 @@ export const LogUsuarios = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
-        const usuario = await Usuario.findOne({ where: { correo } });
+        // Buscar usuario en MongoDB
+        const usuario = await Usuario.findOne({ correo });
 
         if (!usuario) {
             res.status(400).json({ message: `El correo ${correo} no está registrado` });
             return;
         }
 
-        const userData = usuario.get(); // Convierte el modelo a un objeto plano
+        const validPassword = await bcrypt.compare(password, usuario.password);
 
-        const validPassword = await bcrypt.compare(password, userData.password);
-        
         if (!validPassword) {
             res.status(400).json({ message: "La contraseña es incorrecta" });
             return;
         }
 
+        // Generar el token con el correo del usuario
         const token = jwt.sign(
-            { id: userData.id, correo: userData.correo, permiso: userData.permiso },
+            { correo: usuario.correo }, // Incluir el correo en el token
             process.env["SECRET_KEY"] || "CY242BHtr87DCsacYUGjsJN",
             { expiresIn: "1d" }
         );
 
-        res.json({ 
-            token, 
-            userData: { 
-              id: userData.id, // Asegúrate de incluir el ID aquí
-              nombre: userData.nombre, 
-              permiso: userData.permiso 
-            } 
-          });
-
+        // Enviar el token y los datos del usuario
+        res.json({
+            token,
+            userData: {
+                id: usuario._id, // MongoDB usa `_id` en lugar de `id`
+                nombre: usuario.nombre,
+            },
+        });
     } catch (error) {
+        console.error("Error en LogUsuarios:", error);
         res.status(500).json({ message: "Error al iniciar sesión" });
     }
 };
 
-// ver y actualizar usuario loggeado
-export const VerUsuario = async (req: Request, res: Response): Promise<void> => {
+export const GetUsuario = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id } = req.body; // El ID del usuario debe enviarse en el cuerpo de la solicitud
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            res.status(401).json({ message: "Token no proporcionado" });
+            return;
+        }
 
-        const usuario = await Usuario.findOne({ where: { id } });
+        const decoded: any = jwt.verify(token, process.env["SECRET_KEY"] || "CY242BHtr87DCsacYUGjsJN");
+        const correo = decoded.correo;
+
+        // Buscar usuario en MongoDB
+        const usuario = await Usuario.findOne(
+            { correo },
+            { _id: 1, nombre: 1, correo: 1, permiso: 1, estado: 1 } // Proyección para incluir solo los campos necesarios
+        );
 
         if (!usuario) {
             res.status(404).json({ message: "Usuario no encontrado" });
             return;
         }
 
-        const { nombre, correo, permiso, estado } = usuario.get(); // Extraer solo los campos necesarios
-        res.json({ nombre, correo, permiso, estado });
+        res.json(usuario); // Devuelve el usuario encontrado
     } catch (error) {
+        console.error("Error en GetUsuario:", error);
         res.status(500).json({ message: "Error al obtener el usuario" });
     }
 };
+
+// export const RegUsuarios = async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         const { nombre, correo, password, permiso } = req.body;
+
+//         if (!nombre || !correo || !password || !permiso) {
+//             res.status(400).json({ message: "Todos los campos son obligatorios" });
+//             return;
+//         }
+
+//         const usuariounico = await Usuario.findOne({ where: { correo } });
+
+//         if (usuariounico) {
+//             res.status(400).json({ message: `El correo ${correo} ya está registrado` });
+//             return;
+//         }
+
+//         const passwordHash = await bcrypt.hash(password, 10);
+
+//         const nuevoUsuario = await Usuario.create({
+//             nombre,
+//             correo,
+//             password: passwordHash,
+//             estado: 'Activo',
+//             permiso,
+//         });
+
+//         const userData = nuevoUsuario.get(); // Convierte el modelo a un objeto plano
+
+//         res.json({ message: `Usuario ${userData.nombre} registrado correctamente` });
+//     } catch (error) {
+//         res.status(500).json({ message: "Error al registrar el usuario" });
+//     }
+// };
+
+// export const LogUsuarios = async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         const { correo, password } = req.body;
+
+//         if (!correo || !password) {
+//             res.status(400).json({ message: "Correo y contraseña son obligatorios" });
+//             return;
+//         }
+
+//         const usuario = await Usuario.findOne({ where: { correo } });
+
+//         if (!usuario) {
+//             res.status(400).json({ message: `El correo ${correo} no está registrado` });
+//             return;
+//         }
+
+//         const userData = usuario.get(); // Convierte el modelo a un objeto plano
+
+//         const validPassword = await bcrypt.compare(password, userData.password);
+        
+//         if (!validPassword) {
+//             res.status(400).json({ message: "La contraseña es incorrecta" });
+//             return;
+//         }
+
+//         // Generar el token con el ID y el correo del usuario
+//         const token = jwt.sign(
+//             { correo: userData.correo }, // Incluir el correo en el token
+//             process.env["SECRET_KEY"] || "CY242BHtr87DCsacYUGjsJN",
+//             { expiresIn: "1d" }
+//         );
+        
+//         // Enviar el token y los datos del usuario
+//         res.json({ 
+//             token, 
+//             userData: { 
+//                 id: userData.id, // Asegúrate de que este campo esté presente
+//                 nombre: userData.nombre
+//             } 
+//         });
+
+//     } catch (error) {
+//         console.error("Error en LogUsuarios:", error);
+//         res.status(500).json({ message: "Error al iniciar sesión" });
+//     }
+// };
+
+// export const GetUsuario = async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         const token = req.headers.authorization?.split(' ')[1];
+//         if (!token) {
+//             res.status(401).json({ message: "Token no proporcionado" });
+//             return;
+//         }
+
+//         const decoded: any = jwt.verify(token, process.env["SECRET_KEY"] || "CY242BHtr87DCsacYUGjsJN");
+//         const correo = decoded.correo;
+
+//         const usuario = await Usuario.findOne({
+//             where: { correo },
+//             attributes: ['id', 'nombre', 'correo', 'permiso', 'estado'] // Incluye el campo estado
+//         });
+
+//         if (!usuario) {
+//             res.status(404).json({ message: "Usuario no encontrado" });
+//             return;
+//         }
+
+//         res.json(usuario); // Devuelve el estado como parte del objeto usuario
+//     } catch (error) {
+//         console.error("Error en GetUsuario:", error);
+//         res.status(500).json({ message: "Error al obtener el usuario" });
+//     }
+// };

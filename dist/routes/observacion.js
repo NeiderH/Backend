@@ -5,6 +5,6 @@ const observacion_1 = require("../Controllers/observacion");
 const router = (0, express_1.Router)();
 router.post("/api/Observacion/RegObservacion", observacion_1.RegObservacion);
 router.get("/api/Observacion/GetObservacion", observacion_1.GetObservacion);
-router.put("/api/Observacion/UpObservacion/:id_ob", observacion_1.UpObservacion);
-router.delete("/api/Observacion/DelObservacion/:id_ob", observacion_1.DelObservacion);
+router.put("/api/Observacion/UpObservacion/:id", observacion_1.UpObservacion);
+router.delete("/api/Observacion/DelObservacion/:id", observacion_1.DelObservacion);
 exports.default = router;

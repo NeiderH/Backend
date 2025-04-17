@@ -14,19 +14,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DelObservacion = exports.UpObservacion = exports.GetObservacion = exports.RegObservacion = void 0;
 const observacion_1 = require("../Models/observacion");
+const mongoose_1 = __importDefault(require("mongoose"));
 const moment_timezone_1 = __importDefault(require("moment-timezone"));
-// registrar la observacion 
+// Registrar la observación
 const RegObservacion = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { observaciont, fecha } = req.body;
     try {
         // Convertir la fecha a la zona horaria de Colombia
         const fechaConZonaHoraria = (0, moment_timezone_1.default)(fecha).tz('America/Bogota').toDate();
-        yield observacion_1.Observacion.create({
-            observaciont: observaciont,
+        // Crear una nueva observación en MongoDB
+        const nuevaObservacion = new observacion_1.Observacion({
+            observaciont,
             fecha: fechaConZonaHoraria,
         });
+        yield nuevaObservacion.save(); // Guardar en la base de datos
         res.json({
             message: `Observación registrada correctamente`,
+            observacion: nuevaObservacion,
         });
     }
     catch (error) {
@@ -37,14 +41,12 @@ const RegObservacion = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.RegObservacion = RegObservacion;
-// obtener todas las observaciones
+// Obtener todas las observaciones
 const GetObservacion = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const listaobservacion = yield observacion_1.Observacion.findAll({
-            order: [['fecha', 'DESC']],
-        });
-        console.log("📌 Observacion encontrada:", listaobservacion);
-        if (listaobservacion.length === 0) {
+        // Obtener todas las observaciones ordenadas por fecha descendente
+        const listaobservacion = yield observacion_1.Observacion.find().sort({ fecha: -1 });
+        if (listaobservacion.length == 0) {
             console.warn("⚠️ No hay Observaciones en la base de datos.");
         }
         res.json(listaobservacion);
@@ -55,64 +57,151 @@ const GetObservacion = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.GetObservacion = GetObservacion;
-// actualizar la observacion 
+// Actualizar la observación
 const UpObservacion = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id_ob } = req.params;
+    const { id } = req.params; // MongoDB usa `_id` como identificador
     const { observaciont, fecha } = req.body;
     try {
-        const observacion = yield observacion_1.Observacion.findOne({
-            where: {
-                id_ob: id_ob,
-            },
-        });
+        const objectId = new mongoose_1.default.Types.ObjectId(id); // <-- Aquí lo conviertes
+        // Buscar y actualizar la observación
+        const observacion = yield observacion_1.Observacion.findByIdAndUpdate(id, { observaciont }, { new: true } // Retorna el documento actualizado
+        );
         if (observacion) {
-            yield observacion.update({
-                observaciont: observaciont,
-            });
             res.json({
-                message: `Plobservacionato actualizada correctamente`,
+                message: `Observación actualizada correctamente`,
+                observacion,
             });
         }
         else {
             res.status(404).json({
-                message: `observacion no encontrada`,
+                message: `Observación no encontrada`,
             });
         }
     }
     catch (error) {
-        console.error("Error al actualizar la observacion:", error);
+        console.error("Error al actualizar la observación:", error);
         res.status(500).json({
-            message: "Error al actualizar la observacion",
+            message: "Error al actualizar la observación",
         });
     }
 });
 exports.UpObservacion = UpObservacion;
-// eliminar la observacion
+// Eliminar la observación
 const DelObservacion = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id_ob } = req.params;
+    const { id } = req.params; // MongoDB usa `_id` como identificador
     try {
-        const observacion = yield observacion_1.Observacion.findOne({
-            where: {
-                id_ob: id_ob,
-            },
-        });
+        const objectId = new mongoose_1.default.Types.ObjectId(id); // <-- Aquí también
+        // Buscar y eliminar la observación
+        const observacion = yield observacion_1.Observacion.findByIdAndDelete(id);
         if (observacion) {
-            yield observacion.destroy();
             res.json({
-                message: `observacion eliminada correctamente`,
+                message: `Observación eliminada correctamente`,
             });
         }
         else {
             res.status(404).json({
-                message: `observacion no encontrada`,
+                message: `Observación no encontrada`,
             });
         }
     }
     catch (error) {
-        console.error("Error al eliminar la observacion:", error);
+        console.error("Error al eliminar la observación:", error);
         res.status(500).json({
-            message: "Error al eliminar la observacion",
+            message: "Error al eliminar la observación",
         });
     }
 });
 exports.DelObservacion = DelObservacion;
+// // registrar la observacion 
+// export const RegObservacion = async (req: Request, res: Response) => {
+//     const { observaciont, fecha } = req.body;
+//     try {
+//         // Convertir la fecha a la zona horaria de Colombia
+//         const fechaConZonaHoraria = moment(fecha).tz('America/Bogota').toDate();
+//         await Observacion.create({
+//             observaciont: observaciont,
+//             fecha: fechaConZonaHoraria,
+//         });
+//         res.json({
+//             message: `Observación registrada correctamente`,
+//         });
+//     } catch (error) {
+//         console.error("Error al registrar la observación:", error);
+//         res.status(400).json({
+//             message: "Error al registrar la observación",
+//         });
+//     }
+// };
+// // obtener todas las observaciones
+// export const GetObservacion = async (req: Request, res: Response) => {
+//     try {
+//         const listaobservacion = await Observacion.findAll(
+//             {
+//                 order: [['fecha', 'DESC']],
+//             }
+//         );
+//         console.log("📌 Observacion encontrada:", listaobservacion);
+//         if (listaobservacion.length === 0) {
+//             console.warn("⚠️ No hay Observaciones en la base de datos.");
+//         }
+//         res.json(listaobservacion);
+//     } catch (error) {
+//         console.error("❌ Error al obtener Observaciones:", error);
+//         res.status(500).json({ message: "Error al obtener las Observaciones" });
+//     }
+// };
+// // actualizar la observacion 
+// export const UpObservacion = async (req: Request, res: Response) => {
+//     const { id_ob } = req.params;
+//     const { observaciont, fecha } = req.body;
+//     try {
+//         const observacion = await Observacion.findOne({
+//             where: {
+//                 id_ob: id_ob,
+//             },
+//         });
+//         if (observacion) {
+//             await observacion.update({
+//                 observaciont: observaciont,
+//             });
+//             res.json({
+//                 message: `Plobservacionato actualizada correctamente`,
+//             });
+//         } else {
+//             res.status(404).json({
+//                 message: `observacion no encontrada`,
+//             });
+//         }
+//     } catch (error) {
+//         console.error("Error al actualizar la observacion:", error);
+//         res.status(500).json({
+//             message: "Error al actualizar la observacion",
+//         });
+//     }
+// };
+// // eliminar la observacion
+// export const DelObservacion = async (req: Request, res: Response) => {
+//     const { id_ob } = req.params;
+//     try {
+//         const observacion = await Observacion.findOne({
+//             where: {
+//                 id_ob: id_ob,
+//             },
+//         });
+//         if (observacion) {
+//             await observacion.destroy();
+//             res.json({
+//                 message: `observacion eliminada correctamente`,
+//             });
+//         } else {
+//             res.status(404).json({
+//                 message: `observacion no encontrada`,
+//             });
+//         }
+//     } catch (error) {
+//         console.error("Error al eliminar la observacion:", error);
+//         res.status(500).json({
+//             message: "Error al eliminar la observacion",
+//         });
+//     }
+// };

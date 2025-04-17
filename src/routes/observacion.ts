@@ -5,7 +5,7 @@ const router = Router();
 
 router.post("/api/Observacion/RegObservacion", RegObservacion);
 router.get("/api/Observacion/GetObservacion", GetObservacion);
-router.put("/api/Observacion/UpObservacion/:id_ob", UpObservacion);
-router.delete("/api/Observacion/DelObservacion/:id_ob", DelObservacion);
+router.put("/api/Observacion/UpObservacion/:id", UpObservacion);
+router.delete("/api/Observacion/DelObservacion/:id", DelObservacion);
 
 export default router;

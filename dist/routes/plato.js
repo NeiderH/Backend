@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const plato_1 = require("../Controllers/plato");
+// import { DelPlato, GetPlato, RegPlato, UpPlato } from "../Controllers/plato";
 const router = (0, express_1.Router)();
-router.post("/api/Plato/RegPlato", plato_1.RegPlato);
-router.get("/api/Plato/GetPlato", plato_1.GetPlato);
-router.put("/api/Plato/UpPlato/:id_pl", plato_1.UpPlato);
-router.delete("/api/Plato/DelPlato/:id_pl", plato_1.DelPlato);
+// router.post("/api/Plato/RegPlato", RegPlato);
+// router.get("/api/Plato/GetPlato", GetPlato);
+// router.put("/api/Plato/UpPlato/:id_pl", UpPlato);
+// router.delete("/api/Plato/DelPlato/:id_pl", DelPlato);
 exports.default = router;

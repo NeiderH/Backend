@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors'; // Importa CORS
-import sequelize from '../data/conexion';
+//import sequelize from '../data/conexion';
+import connectDB from '../data/conexion';
 import routerU from '../routes/usuario';
 import routerF from '../routes/factura';
 import routerO from '../routes/observacion';
@@ -25,7 +26,7 @@ class Server {
 
     listen() {
         this.app.listen(this.port, () => {
-            console.log(`Server running on port ${this.port}`);
+            console.log(`Server port ${this.port}`);
         });
     }
 
@@ -49,16 +50,12 @@ class Server {
 
     async DBConexion() {
         try {
-            // recordarme eliminar sync en producción
-            await Usuario;
-            await Factura;
-            await Observacion;
-            await Mercancia;
-            console.log('DB online');
+          await connectDB(); // Conectar a MongoDB
+          console.log('DB mongo online');
         } catch (error) {
-            console.log(error);
+          console.error('Error al conectar a la base de datos:', error);
         }
-    }
+      }
 }
 
 export default Server;
